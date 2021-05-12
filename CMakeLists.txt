@@ -35,9 +35,9 @@ endif()
 
 if(HUNTER_VENV_USE_3)
   if(${HUNTER_VENV_PYTHON_VERSION} VERSION_GREATER_EQUAL "3.3")
-    set(venv_module_name, "venv")
+    set(venv_module_name "venv")
   else()
-    set(venv_module_name, "virtualenv")
+    set(venv_module_name "virtualenv")
   endif()
 endif()
 
