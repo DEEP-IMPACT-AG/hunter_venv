@@ -143,18 +143,6 @@ create_tool(pip${Python_VERSION_MAJOR} "pip._internal")
 create_tool(pip${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "pip._internal")
 create_tool(wheel "wheel.cli")
 
-# Make an EXISTING virtualenv environment relocatable.
-# This fixes up scripts and makes all .pth files
-# relative.
-set(
-    cmd
-    ${Python_EXECUTABLE}
-    -m
-    virtualenv
-    --relocatable
-    ${venv_dir}
-)
-
 set(cmd_human)
 foreach(x ${cmd})
   set(cmd_human "${cmd_human} \"${x}\"")
