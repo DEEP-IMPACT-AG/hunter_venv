@@ -33,6 +33,15 @@ if(HUNTER_VENV_USE_2 AND HUNTER_VENV_USE_3)
   message(FATAL_ERROR "Internal error")
 endif()
 
+if(HUNTER_VENV_USE_3)
+  if(${HUNTER_VENV_PYTHON_VERSION} VERSION_GREATER_EQUAL "3.3")
+    set(venv_module_name, "venv")
+  else()
+    set(venv_module_name, "virtualenv")
+  endif()
+endif()
+
+
 if(NOT HUNTER_VENV_USE_2 AND NOT HUNTER_VENV_USE_3)
   message(
       FATAL_ERROR
@@ -75,7 +84,7 @@ set(
     cmd
     ${Python_EXECUTABLE}
     -m
-    virtualenv
+    ${venv_module_name}
     --python=${Python_EXECUTABLE}
     --always-copy # Always copy files rather than symlinking
     ${venv_dir}
@@ -95,6 +104,7 @@ if(NOT result EQUAL "0")
 endif()
 
 # `virtualenv --relocatable` will not help, still not relocatable
+# Update  `virtualenv --relocatable` is not supported by virtualenv anymore
 set(
     unrelocatable_list
     activate
@@ -116,6 +126,7 @@ endforeach()
 #   > conda create --name a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789
 #   > conda activate a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789a0123456789b0123456789c0123456789
 #   > cat `which pip`
+# Update  `virtualenv --relocatable` is not supported by virtualenv anymore
 
 function(create_tool path from)
   set(dst "${venv_dir}/bin/${path}")
