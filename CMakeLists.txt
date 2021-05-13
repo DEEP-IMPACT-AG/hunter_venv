@@ -200,5 +200,5 @@ install(
 )
 
 if (UNIX)
-  install(CODE "execute_process(COMMAND find bin -type f -exec ex -sc \"%s,${venv_dir},\${PWD},g|x\" \"{}\" \";\"" ))
+  install(CODE "execute_process(COMMAND find bin -type f -exec ex -sc \"%s,${venv_dir},\${PWD},g|x\" \"{}\" \";\")")
 endif()
