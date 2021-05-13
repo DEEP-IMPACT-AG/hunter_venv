@@ -200,5 +200,6 @@ install(
 )
 
 if (UNIX)
-  install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},\${PWD},g|x\" \"{}\" \";\")")
+  message "venv dir: ${venv_dir}"
+  install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
 endif()
