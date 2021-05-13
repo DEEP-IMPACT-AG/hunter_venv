@@ -33,15 +33,6 @@ if(HUNTER_VENV_USE_2 AND HUNTER_VENV_USE_3)
   message(FATAL_ERROR "Internal error")
 endif()
 
-if(HUNTER_VENV_USE_3)
-  if(${HUNTER_VENV_PYTHON_VERSION} VERSION_GREATER_EQUAL "3.3")
-    set(venv_module_name "venv")
-  else()
-    set(venv_module_name "virtualenv")
-  endif()
-endif()
-
-
 if(NOT HUNTER_VENV_USE_2 AND NOT HUNTER_VENV_USE_3)
   message(
       FATAL_ERROR
@@ -80,15 +71,28 @@ endif()
 
 set(venv_dir "${CMAKE_CURRENT_BINARY_DIR}/venv")
 
-set(
-    cmd
-    ${Python_EXECUTABLE}
-    -m
-    ${venv_module_name}
-    --python=${Python_EXECUTABLE}
-    --always-copy # Always copy files rather than symlinking
-    ${venv_dir}
-)
+if(HUNTER_VENV_USE_3)
+  if(${HUNTER_VENV_PYTHON_VERSION} VERSION_GREATER_EQUAL "3.3")
+    set(
+        cmd
+        ${Python_EXECUTABLE}
+        -m
+        venv
+        --copies # Always copy files rather than symlinking
+        ${venv_dir}
+    )
+  else()
+    set(
+        cmd
+        ${Python_EXECUTABLE}
+        -m
+        virtualenv
+        --python=${Python_EXECUTABLE}
+        --always-copy # Always copy files rather than symlinking
+        ${venv_dir}
+    )
+  endif()
+endif()
 
 set(cmd_human)
 foreach(x ${cmd})
