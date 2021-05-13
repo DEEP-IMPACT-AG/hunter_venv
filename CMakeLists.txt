@@ -201,4 +201,5 @@ install(
 
 if (UNIX)
   install(CODE "execute_process(COMMAND find bin -type f -exec ex -sc \"%s,${venv_dir},\${PWD},g|x\" \"{}\" \";\")")
+  install(CODE "execute_process(COMMAND pwd OUTPUT_FILE /tmp/cmakelog.txt )")
 endif()
