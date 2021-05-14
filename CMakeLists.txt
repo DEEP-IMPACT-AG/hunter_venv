@@ -200,6 +200,7 @@ install(
 )
 
 if (UNIX)
+  # Since relocatable is not supported anymore, we will try to do something aimilar here.
   message("venv dir: ${venv_dir}")
 #  message("execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
   install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
