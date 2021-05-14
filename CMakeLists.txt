@@ -201,6 +201,8 @@ install(
 
 if (UNIX)
   message("venv dir: ${venv_dir}")
-  message("execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
+#  message("execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
   install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
+  #..../Build/hunter_venv/Install/..... will become ..../Install/.....
+  install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,/Build/hunter_venv/Install/,/Install/,g|x\" \"{}\" \";\")")
 endif()
