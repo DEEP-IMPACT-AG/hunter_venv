@@ -43,6 +43,17 @@ endif()
 
 find_package(Python ${HUNTER_VENV_PYTHON_VERSION} EXACT REQUIRED)
 
+###########################################################
+# All variables
+
+message("==== ALL VARIABLES  ===========================")
+get_cmake_property(_variableNames VARIABLES)
+list (SORT _variableNames)
+foreach (_variableName ${_variableNames})
+  message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+message("==== END OF ALL VARIABLES  ===========================")
+
 message("Python_EXECUTABLE: ${Python_EXECUTABLE}")
 message("Python_SITELIB: ${Python_SITELIB}")
 
@@ -92,6 +103,14 @@ if(HUNTER_VENV_USE_3)
         ${venv_dir}
     )
   endif()
+
+  # virtualenv v0.20 and above does not copy python-config, venv never did. However a lot of (g*: gobject, gi, etc)
+  # packages needs it to be able to be configured. So let's do it here.
+#  file(GLOB PYTHON_CONFIG_EXECUTABLES
+#          "myDir/*.h"
+#          )
+#  file(COPY ${MY_PUBLIC_HEADERS} DESTINATION myDestination)
+
 endif()
 
 set(cmd_human)
@@ -200,7 +219,7 @@ install(
 )
 
 if (UNIX)
-  # Since relocatable is not supported anymore, we will try to do something aimilar here.
+  # Since relocatable is not supported anymore, we will try to do something similar here.
   message("venv dir: ${venv_dir}")
 #  message("execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
   install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
