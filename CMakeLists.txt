@@ -188,7 +188,7 @@ if (UNIX)
     file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir})
     #libs
     file(GLOB PYTHON_LIBRARIES
-            "${PYTHON_BIN_DIR}/lib/libpython*"
+            "${Python_ROOT_DIR}/lib/libpython*"
             )
     file(COPY ${PYTHON_LIBRARIES} DESTINATION ${venv_dir}/lib)
   endif()
