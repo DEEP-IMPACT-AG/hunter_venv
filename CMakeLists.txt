@@ -184,7 +184,7 @@ if (UNIX)
   #venv does not copy the C headers, let's do it ourselves
   if (DEFINED USE_VENV)
     message("Copying C headers...")
-    file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir}/include)
+    file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir})
   endif()
 
 endif()
