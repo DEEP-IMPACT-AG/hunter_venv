@@ -81,6 +81,7 @@ if(HUNTER_VENV_USE_3)
         --copies # Always copy files rather than symlinking
         ${venv_dir}
     )
+    set(USE_VENV)
   else()
     set(
         cmd
@@ -91,15 +92,8 @@ if(HUNTER_VENV_USE_3)
         --always-copy # Always copy files rather than symlinking
         ${venv_dir}
     )
+    set(USE_VIRTUALENV)
   endif()
-
-  # virtualenv v0.20 and above does not copy python-config, the venv module never did. However a lot of
-  # (g*: gobject, gi, etc) packages needs it to be able to be configured. So let's do it here.
-  get_filename_component(PYTHON_BIN_DIR ${Python_EXECUTABLE} DIRECTORY)
-  file(GLOB PYTHON_CONFIG_EXECUTABLES
-          "${PYTHON_BIN_DIR}/python*-config"
-          )
-  file(COPY ${PYTHON_CONFIG_EXECUTABLES} DESTINATION ${venv_dir}/bin)
 
 endif()
 
@@ -175,6 +169,24 @@ endforeach()
 message("Running command: ${cmd_human}")
 
 execute_process(COMMAND ${cmd} RESULT_VARIABLE result)
+
+if (UNIX)
+# I only tested this on linux remove the if, if it works on other OS-es
+
+  # virtualenv v0.20 and above does not copy python-config, the venv module never did. However a lot of
+  # (g*: gobject, gi, etc) packages needs it to be able to be configured. So let's do it here.
+  get_filename_component(PYTHON_BIN_DIR ${Python_EXECUTABLE} DIRECTORY)
+  file(GLOB PYTHON_CONFIG_EXECUTABLES
+          "${PYTHON_BIN_DIR}/python*-config"
+          )
+  file(COPY ${PYTHON_CONFIG_EXECUTABLES} DESTINATION ${venv_dir}/bin)
+
+  #venv does not copy the C headers, let's do it ourselves
+  if (DEFINED USE_VENV)
+    file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir}/include)
+  endif()
+
+endif()
 
 if(NOT result EQUAL "0")
   message(FATAL_ERROR "Failed: ${result}")
