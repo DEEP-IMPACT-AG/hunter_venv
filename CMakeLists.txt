@@ -110,6 +110,31 @@ if(NOT result EQUAL "0")
   message(FATAL_ERROR "Failed: ${result}")
 endif()
 
+if (UNIX)
+  # I only tested this on linux remove the if, if it works on other OS-es
+
+  # virtualenv v0.20 and above does not copy python-config, the venv module never did. However a lot of
+  # (g*: gobject, gi, etc) packages needs it to be able to be configured. So let's do it here.
+  get_filename_component(PYTHON_BIN_DIR ${Python_EXECUTABLE} DIRECTORY)
+  file(GLOB PYTHON_CONFIG_EXECUTABLES
+          "${PYTHON_BIN_DIR}/python*-config"
+          )
+  file(COPY ${PYTHON_CONFIG_EXECUTABLES} DESTINATION ${venv_dir}/bin)
+
+  #venv does not copy the C headers, let's do it ourselves
+  if (DEFINED USE_VENV)
+    message("Copying C headers and libraries...")
+    #headers
+    file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir})
+    #libs
+    file(GLOB PYTHON_LIBRARIES
+            "${Python_ROOT_DIR}/lib/libpython*"
+            )
+    file(COPY ${PYTHON_LIBRARIES} DESTINATION ${venv_dir}/lib)
+  endif()
+
+endif()
+
 # `virtualenv --relocatable` will not help, still not relocatable
 # Update  `virtualenv --relocatable` is not supported by virtualenv anymore
 set(
@@ -160,44 +185,6 @@ create_tool(pip "pip._internal")
 create_tool(pip${Python_VERSION_MAJOR} "pip._internal")
 create_tool(pip${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "pip._internal")
 create_tool(wheel "wheel.cli")
-
-set(cmd_human)
-foreach(x ${cmd})
-  set(cmd_human "${cmd_human} \"${x}\"")
-endforeach()
-
-message("Running command: ${cmd_human}")
-
-execute_process(COMMAND ${cmd} RESULT_VARIABLE result)
-
-if (UNIX)
-# I only tested this on linux remove the if, if it works on other OS-es
-
-  # virtualenv v0.20 and above does not copy python-config, the venv module never did. However a lot of
-  # (g*: gobject, gi, etc) packages needs it to be able to be configured. So let's do it here.
-  get_filename_component(PYTHON_BIN_DIR ${Python_EXECUTABLE} DIRECTORY)
-  file(GLOB PYTHON_CONFIG_EXECUTABLES
-          "${PYTHON_BIN_DIR}/python*-config"
-          )
-  file(COPY ${PYTHON_CONFIG_EXECUTABLES} DESTINATION ${venv_dir}/bin)
-
-  #venv does not copy the C headers, let's do it ourselves
-  if (DEFINED USE_VENV)
-    message("Copying C headers and libraries...")
-    #headers
-    file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir})
-    #libs
-    file(GLOB PYTHON_LIBRARIES
-            "${Python_ROOT_DIR}/lib/libpython*"
-            )
-    file(COPY ${PYTHON_LIBRARIES} DESTINATION ${venv_dir}/lib)
-  endif()
-
-endif()
-
-if(NOT result EQUAL "0")
-  message(FATAL_ERROR "Failed: ${result}")
-endif()
 
 install(
     DIRECTORY ${venv_dir}/
