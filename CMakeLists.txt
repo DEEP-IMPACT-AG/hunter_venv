@@ -81,7 +81,7 @@ if(HUNTER_VENV_USE_3)
         --copies # Always copy files rather than symlinking
         ${venv_dir}
     )
-    set(USE_VENV)
+    set(USE_VENV 1)
   else()
     set(
         cmd
@@ -92,7 +92,7 @@ if(HUNTER_VENV_USE_3)
         --always-copy # Always copy files rather than symlinking
         ${venv_dir}
     )
-    set(USE_VIRTUALENV)
+    set(USE_VIRTUALENV 1)
   endif()
 
 endif()
