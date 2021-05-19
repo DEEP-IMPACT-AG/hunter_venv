@@ -183,8 +183,14 @@ if (UNIX)
 
   #venv does not copy the C headers, let's do it ourselves
   if (DEFINED USE_VENV)
-    message("Copying C headers...")
+    message("Copying C headers and libraries...")
+    #headers
     file(COPY ${Python_ROOT_DIR}/include DESTINATION ${venv_dir})
+    #libs
+    file(GLOB PYTHON_LIBRARIES
+            "${PYTHON_BIN_DIR}/lib/libpython*"
+            )
+    file(COPY ${PYTHON_LIBRARIES} DESTINATION ${venv_dir}/lib)
   endif()
 
 endif()
