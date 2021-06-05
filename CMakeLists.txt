@@ -137,21 +137,23 @@ endif()
 
 # `virtualenv --relocatable` will not help, still not relocatable
 # Update  `virtualenv --relocatable` is not supported by virtualenv anymore
-set(
-    unrelocatable_list
-    activate
-    activate.bat
-    activate.csh
-    activate.fish
-    activate.ps1
-    activate.xsh
-    deactivate.bat
-)
-
-foreach(x ${unrelocatable_list})
-  file(REMOVE "${venv_dir}/bin/${x}")
-  file(REMOVE "${venv_dir}/Scripts/${x}")
-endforeach()
+# Update2 I actually need these scripts (in order to be able to run gst-python), so removing them is not acceptable
+# The execute_process at the bottom will change the paths in these files too
+#set(
+#    unrelocatable_list
+#    activate
+#    activate.bat
+#    activate.csh
+#    activate.fish
+#    activate.ps1
+#    activate.xsh
+#    deactivate.bat
+#)
+#
+#foreach(x ${unrelocatable_list})
+#  file(REMOVE "${venv_dir}/bin/${x}")
+#  file(REMOVE "${venv_dir}/Scripts/${x}")
+#endforeach()
 
 # `virtualenv --relocatable` will fail if path to the script is too long.
 # Create some files manually. Taken from results of running conda, e.g. for pip:
@@ -219,6 +221,7 @@ if (UNIX)
   message("venv dir: ${venv_dir}")
 #  message("execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
   install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,${venv_dir},${CMAKE_INSTALL_PREFIX},g|x\" \"{}\" \";\")")
+  #TODO add these files to PACKAGE_UNRELOCATABLE_TEXT_FILES in hunter_download instead of search/replace here?
   #..../Build/hunter_venv/Install/..... will become ..../Install/.....
   install(CODE "execute_process(COMMAND find ${CMAKE_INSTALL_PREFIX}/bin -type f -exec ex -sc \"%s,/Build/hunter_venv/Install,/Install,g|x\" \"{}\" \";\")")
 endif()
