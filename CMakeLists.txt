@@ -110,8 +110,26 @@ if(NOT result EQUAL "0")
   message(FATAL_ERROR "Failed: ${result}")
 endif()
 
+function(replace_in_file file search_text replace_text)
+  file(STRINGS "${file}" lines)
+
+  set(isFirstLine "TRUE")
+  set(output_content "")
+  foreach(line ${lines})
+    string(REPLACE "${search_text}" "${replace_text}" line "${line}")
+    if (isFirstLine)
+      set(output_content "${line}")
+      set(isFirstLine "FALSE")
+    else()
+      set(output_content "${output_content}\n${line}")
+    endif()
+  endforeach()
+
+  file(WRITE "${file}" "${output_content}\n")
+endfunction()
+
 if (UNIX)
-  # I only tested this on linux remove the if, if it works on other OS-es
+  # I only tested this on linux alter the if, if it works on other OS-es
 
   # virtualenv v0.20 and above does not copy python-config, the venv module never did. However a lot of
   # (g*: gobject, gi, etc) packages needs it to be able to be configured. So let's do it here.
@@ -120,6 +138,20 @@ if (UNIX)
           "${PYTHON_BIN_DIR}/python*-config"
           )
   file(COPY ${PYTHON_CONFIG_EXECUTABLES} DESTINATION ${venv_dir}/bin)
+
+  #Also patch the python*-config files to point to the right python
+  file(GLOB NEW_PYTHON_CONFIG_EXECUTABLES
+          "${venv_dir}/bin/python*-config"
+          )
+
+  get_filename_component(ORIGINAL_PYTHON_ROOT ${PYTHON_BIN_DIR} DIRECTORY)
+  get_filename_component(ORIGINAL_PYTHON_ROOT2 ${PYTHON_BIN_DIR}/.. ABSOLUTE)
+  message("Original Python root:    ${ORIGINAL_PYTHON_ROOT}")
+  message("Original Python root v2: ${ORIGINAL_PYTHON_ROOT2}")
+
+  foreach(c_file ${NEW_PYTHON_CONFIG_EXECUTABLES})
+    replace_in_file(${c_file} ${ORIGINAL_PYTHON_ROOT} ${venv_dir})
+  endforeach()
 
   #venv does not copy the C headers, let's do it ourselves
   if (DEFINED USE_VENV)
